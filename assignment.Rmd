@@ -1,0 +1,67 @@
+---
+title: "Round -2  //Assignment//"
+output: html_notebook
+---
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook.
+
+Importing libraries
+```{r}
+rm(list = ls())
+library(ggplot2)
+```
+
+Reading Data from filesystem stored as `data.csv` file.
+
+```{r}
+data_loc <- '/home/saradindu/dev/assignmests/data.csv'
+df <- read.csv(data_loc,stringsAsFactors = FALSE)
+```
+Calculating CPM, Earned Revenue
+
+CPM = (Revenue/Impressions)*1000
+```{r}
+df$cpm <- (df$total_revenue/df$total_impressions)*1000
+df$cpm[is.nan(df$cpm)] <- 0
+df$publisher_revenue <- df$total_revenue * df$revenue_share_percent
+df$date <- as.POSIXct(df$date,tryFormats = c("%d/%m/%Y"))
+print(head(df))
+```
+Question 1: The person compiling the The person compiling the data recorded some inconsistencies within the numbers. Can you identify and categorize these inconsistencies and errors?data recorded some inconsistencies within the numbers. Can you identify and categorize these inconsistencies and errors?
+```{r}
+# Revenue Share Percentage cannot be more than 1 or 100%
+dt <- subset.data.frame(df,df$revenue_share_percent > 1)
+# Total viewable Impressions cannot be more than the total measurable impressions
+dt1 <- subset.data.frame(df,df$viewable_impressions > df$measurable_impressions)
+name <- c("Inconsistencies in viewable_impressions","revenue_share_percent more than 1")
+count <- c(nrow(dt1), nrow(dt))
+dfInconsistencies <- data.frame(name, count)
+plot <- ggplot(dfInconsistencies, aes(x=name, y=count)) + geom_col() + labs(title="Inconsistencies in the data", y="Count") 
+print(plot)
+```
+Question 2: For each site, which advertiser has the highest CPM, and can you track this CPM over time?
+```{r}
+# Number of Publishers, Advertisers and their Count
+plot1 <- ggplot(df, aes(x = site_id), color = "blue") + geom_bar() + labs(title = "Total Publishers",x = "Publishers", y = "Count")
+print(plot1)
+plot2 <- ggplot(df, aes(x = advertiser_id), color = "blue") + geom_bar() + labs(title = "Total Advertisers",x = "Advertisers", y = "Count")
+print(plot2)
+```
+```{r}
+publishers <- unique(df$site_id)
+advertisers <- unique(df$advertiser_id)
+for (publisher in publishers) 
+{
+  df_temp <- subset.data.frame(df,df$site_id == publisher)
+  advertiser_site <- unique(df_temp$advertiser_id)
+  for (advertiser in advertiser_site) 
+  {
+    df_temp_1 <- subset.data.frame(df_temp,df_temp$advertiser_id == advertiser)
+    
+  }
+  
+}
+```
+
+
+
+
