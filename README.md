@@ -2,11 +2,13 @@
 
 This assignment directory contains R code as well as R notebook file.
 
+```
 --|
   |-- /data - Contains the csv file
+  |
   |-- /assignment.Rmd - R notebook File containing all the code
   |-- /assignment.nb.html - Viewable notebook file from browser
-
+```
 Libraries;
 - ggplot2
 
