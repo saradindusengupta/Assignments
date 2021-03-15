@@ -1,6 +1,8 @@
 ---
 title: "Round -2  //Assignment//"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook.
 
