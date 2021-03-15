@@ -8,6 +8,8 @@ Importing libraries
 ```{r}
 rm(list = ls())
 library(ggplot2)
+library(Hmisc)
+library(ggcorrplot)
 ```
 
 Reading Data from filesystem stored as `data.csv` file.
@@ -78,7 +80,7 @@ for (i in 1:length(publishers))
 }
 remove(df_tmp)
 remove(df_temp)
-print(head(df_cpm))
+print(maxCPM)
 plot3 <- ggplot(maxCPM, aes(x = site_id , y = advertiser_id), color = "blue") + geom_col() + labs(title = "Highest CPM per Publisher",x = "Publishers", y = "Advertisers")
 print(plot3)
 ```
@@ -107,12 +109,29 @@ ggplot(df_7, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title 
 ggplot(df_8, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title = paste("CPM over Time for ", publishers[8],sep = ''),x = "Date", y = "CPM")
 ggplot(df_9, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title = paste("CPM over Time for ", publishers[9],sep = ''),x = "Date", y = "CPM")
 ggplot(df_10, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title = paste("CPM over Time for ", publishers[10],sep = ''),x = "Date", y = "CPM")
-remove(df_1)
+remove(df_2)
+remove(df_3)
+remove(df_4)
+remove(df_5)
+remove(df_6)
+remove(df_7)
+remove(df_8)
+remove(df_9)
+remove(df_10)
+
+```
+
+Feature Analysis
+
+```{r}
+ggplot(df_1, aes(x = total_impressions, y = publisher_revenue),color = "blue") + geom_point() + stat_smooth()+labs(title = paste("Total Impressions v Revenue ",sep = ''),x = "No of Impressions", y = "Earned Revenue")
+df_1_1 <- df_1[,c(1,11,12,13,14,15,16,17)]
+corMatrix <- rcorr(as.matrix(df_1_1[,-c(1)]))
+ggcorrplot(corMatrix$r, method = "circle")
 
 ```
 
 ```{r}
 
 ```
-
 
