@@ -13,7 +13,7 @@ library(ggplot2)
 Reading Data from filesystem stored as `data.csv` file.
 
 ```{r}
-data_loc <- '/home/saradindu/dev/assignmests/data.csv'
+data_loc <- 'D:/code_repository/Assignments/data/data.csv'
 df <- read.csv(data_loc,stringsAsFactors = FALSE)
 ```
 Calculating CPM, Earned Revenue
@@ -22,8 +22,9 @@ CPM = (Revenue/Impressions)*1000
 ```{r}
 df$cpm <- (df$total_revenue/df$total_impressions)*1000
 df$cpm[is.nan(df$cpm)] <- 0
+df$cpm[is.infinite(df$cpm)] <- 0
 df$publisher_revenue <- df$total_revenue * df$revenue_share_percent
-df$date <- as.POSIXct(df$date,tryFormats = c("%d/%m/%Y"))
+df$date <- as.POSIXct(df$date,tryFormats = c("%d-%m-%Y"))
 print(head(df))
 ```
 Question 1: The person compiling the The person compiling the data recorded some inconsistencies within the numbers. Can you identify and categorize these inconsistencies and errors?data recorded some inconsistencies within the numbers. Can you identify and categorize these inconsistencies and errors?
@@ -49,19 +50,69 @@ print(plot2)
 ```{r}
 publishers <- unique(df$site_id)
 advertisers <- unique(df$advertiser_id)
-for (publisher in publishers) 
+df_cpm <- data.frame()
+for (i in 1:length(publishers)) 
 {
-  df_temp <- subset.data.frame(df,df$site_id == publisher)
+  df_temp <- subset.data.frame(df,df$site_id == publishers[i])
   advertiser_site <- unique(df_temp$advertiser_id)
-  for (advertiser in advertiser_site) 
+  for (j in 1:length(advertiser_site)) 
   {
-    df_temp_1 <- subset.data.frame(df_temp,df_temp$advertiser_id == advertiser)
-    
+    df_temp_1 <- subset.data.frame(df_temp,df_temp$advertiser_id == advertiser_site[j])
+    cpmSum <- sum(df_temp_1$cpm, na.rm = TRUE)
+    df_tmp <- data.frame("site_id" = df_temp_1[j,2],"advertiser_id" = df_temp_1[j,6],"cpm"=cpmSum)
+    df_cpm=rbind(df_cpm,df_tmp)
   }
   
 }
+remove(df_tmp)
+remove(df_temp)
+remove(df_temp_1)
+df_cpm <- df_cpm[!is.na(df_cpm[,1]),]
+maxCPM <- data.frame()
+for (i in 1:length(publishers)) 
+{
+  df_temp <- subset.data.frame(df_cpm,df_cpm$site_id == publishers[i])
+  highest_cpm <- max(df_temp$cpm)
+  df_tmp <- df_temp[which(df_temp$cpm == highest_cpm),]
+  maxCPM <- rbind(maxCPM, df_tmp)
+}
+remove(df_tmp)
+remove(df_temp)
+print(head(df_cpm))
+plot3 <- ggplot(maxCPM, aes(x = site_id , y = advertiser_id), color = "blue") + geom_col() + labs(title = "Highest CPM per Publisher",x = "Publishers", y = "Advertisers")
+print(plot3)
 ```
 
+TRacking CPM for every Publisher Over time
 
+```{r}
+ 
+df_1 <- subset.data.frame(df,df$site_id == publishers[1])
+df_2 <- subset.data.frame(df,df$site_id == publishers[2])
+df_3 <- subset.data.frame(df,df$site_id == publishers[3])
+df_4 <- subset.data.frame(df,df$site_id == publishers[4])
+df_5 <- subset.data.frame(df,df$site_id == publishers[5])
+df_6 <- subset.data.frame(df,df$site_id == publishers[6])
+df_7 <- subset.data.frame(df,df$site_id == publishers[7])
+df_8 <- subset.data.frame(df,df$site_id == publishers[8])
+df_9 <- subset.data.frame(df,df$site_id == publishers[9])
+df_10 <- subset.data.frame(df,df$site_id == publishers[10])
+ggplot(df_1, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title = paste("CPM over Time for ", publishers[1],sep = ''),x = "Date", y = "CPM")
+ggplot(df_2, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title = paste("CPM over Time for ", publishers[2],sep = ''),x = "Date", y = "CPM")
+ggplot(df_3, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title = paste("CPM over Time for ", publishers[3],sep = ''),x = "Date", y = "CPM")
+ggplot(df_4, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title = paste("CPM over Time for ", publishers[4],sep = ''),x = "Date", y = "CPM")
+ggplot(df_5, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title = paste("CPM over Time for ", publishers[5],sep = ''),x = "Date", y = "CPM")
+ggplot(df_6, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title = paste("CPM over Time for ", publishers[6],sep = ''),x = "Date", y = "CPM")
+ggplot(df_7, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title = paste("CPM over Time for ", publishers[7],sep = ''),x = "Date", y = "CPM")
+ggplot(df_8, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title = paste("CPM over Time for ", publishers[8],sep = ''),x = "Date", y = "CPM")
+ggplot(df_9, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title = paste("CPM over Time for ", publishers[9],sep = ''),x = "Date", y = "CPM")
+ggplot(df_10, aes(x = date, y = cpm),color = "blue") + geom_point() + labs(title = paste("CPM over Time for ", publishers[10],sep = ''),x = "Date", y = "CPM")
+remove(df_1)
+
+```
+
+```{r}
+
+```
 
 
